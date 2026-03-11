@@ -6,6 +6,7 @@
 	import {
 		LayoutDashboard,
 		Boxes,
+		Map,
 		Settings,
 		Users,
 		LogOut,
@@ -34,6 +35,7 @@
 	const navItems = [
 		{ href: '/admin', label: 'Tableau de bord', icon: LayoutDashboard, exact: true },
 		{ href: '/admin/modules', label: 'Modules', icon: Boxes },
+		{ href: '/admin/plan', label: 'Plan d\'exposition', icon: Map },
 		{ href: '/admin/settings', label: 'Paramètres', icon: Settings },
 		{ href: '/admin/admins', label: 'Administrateurs', icon: Users }
 	];

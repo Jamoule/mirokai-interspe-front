@@ -46,6 +46,8 @@ export const api = {
 	toggleModule: (id: string, is_active: boolean) =>
 		request<Module>('PATCH', `/modules/${id}/toggle`, { is_active }),
 	deleteModule: (id: string) => request<void>('DELETE', `/modules/${id}`),
+	updatePositions: (positions: { id: string; position_x: number; position_y: number }[]) =>
+		request<Module[]>('PATCH', '/modules/positions', positions),
 
 	// Questions
 	getQuestionsAll: (moduleId: string) =>
