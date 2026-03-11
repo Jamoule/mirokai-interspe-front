@@ -581,7 +581,7 @@
 										<!-- Answers -->
 										{#if q.answers?.length}
 											<div class="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-												{#each q.answers.sort((a, b) => a.display_order - b.display_order) as answer}
+												{#each [...q.answers].sort((a, b) => a.display_order - b.display_order) as answer}
 													<div
 														class="flex items-center gap-2 rounded-lg px-3 py-1.5"
 														style="background-color: {answer.is_correct ? '#16a34a20' : '#3995ff10'}; border: 1px solid {answer.is_correct ? '#16a34a40' : '#3995ff15'};"
