@@ -76,7 +76,7 @@
 	style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"
 ></video>
 
-{#if scrollMode && segments.length > 0}
+{#if playing && scrollMode && segments.length > 0}
 	<!-- Mode scroll : timestamps absents, navigation manuelle entre répliques -->
 	{@const seg = segments[scrollIdx]}
 	<div class="fixed bottom-28 left-0 right-0 z-25 flex flex-col items-center gap-2 px-4 pointer-events-none">
@@ -113,7 +113,7 @@
 			<p class="text-white text-sm leading-relaxed">{seg.text}</p>
 		</div>
 	</div>
-{:else if currentSegment}
+{:else if playing && currentSegment}
 	<!-- Mode sync : affichage calé sur les timestamps -->
 	<div class="fixed bottom-28 left-1/2 -translate-x-1/2 z-25 w-[min(90vw,34rem)] text-center pointer-events-none">
 		<div
