@@ -54,7 +54,7 @@
 		style="background: linear-gradient(135deg, #0F0B24 0%, #1D3AA2 100%)"
 	>
 		<div class="flex flex-col items-center gap-4">
-			<div class="h-12 w-12 animate-spin rounded-full border-4 border-accent border-t-transparent"></div>
+			<div class="h-12 w-12 animate-spin rounded-full border-4 border-[#3995FF] border-t-transparent"></div>
 			<span class="text-white/60">Chargement...</span>
 		</div>
 	</div>
@@ -94,12 +94,13 @@
 			</div>
 
 			<!-- Nav -->
-			<nav class="flex flex-col gap-1 p-3 flex-1">
+			<nav class="flex flex-1 flex-col gap-1 p-3">
 				{#each navItems as item}
 					{@const active = isActive(item.href, item.exact)}
+					{@const Icon = item.icon}
 					<a
 						href={item.href}
-						class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 relative"
+						class="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200"
 						style="
 							color: {active ? 'white' : '#94a3b8'};
 							background-color: {active ? '#1D3AA230' : 'transparent'};
@@ -111,14 +112,26 @@
 								(e.currentTarget as HTMLElement).style.color = 'white';
 							}
 						}}
+						onfocus={(e) => {
+							if (!active) {
+								(e.currentTarget as HTMLElement).style.backgroundColor = '#3995ff10';
+								(e.currentTarget as HTMLElement).style.color = 'white';
+							}
+						}}
 						onmouseout={(e) => {
 							if (!active) {
 								(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
 								(e.currentTarget as HTMLElement).style.color = '#94a3b8';
 							}
 						}}
+						onblur={(e) => {
+							if (!active) {
+								(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+								(e.currentTarget as HTMLElement).style.color = '#94a3b8';
+							}
+						}}
 					>
-						<svelte:component this={item.icon} size={18} />
+						<Icon size={18} />
 						{#if sidebarOpen}
 							<span>{item.label}</span>
 							{#if active}
@@ -133,8 +146,8 @@
 			<div class="border-t p-3" style="border-color: #3995ff22">
 				{#if sidebarOpen && auth.admin}
 					<div class="mb-2 rounded-lg px-3 py-2" style="background-color: #221c4a">
-						<div class="text-sm font-medium text-white truncate">{auth.admin.display_name}</div>
-						<div class="text-xs truncate" style="color: #3995ff88">{auth.admin.email}</div>
+						<div class="truncate text-sm font-medium text-white">{auth.admin.display_name}</div>
+						<div class="truncate text-xs" style="color: #3995ff88">{auth.admin.email}</div>
 					</div>
 				{/if}
 				<button
@@ -145,7 +158,15 @@
 						(e.currentTarget as HTMLElement).style.backgroundColor = '#ff444410';
 						(e.currentTarget as HTMLElement).style.color = '#ff7777';
 					}}
+					onfocus={(e) => {
+						(e.currentTarget as HTMLElement).style.backgroundColor = '#ff444410';
+						(e.currentTarget as HTMLElement).style.color = '#ff7777';
+					}}
 					onmouseout={(e) => {
+						(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+						(e.currentTarget as HTMLElement).style.color = '#94a3b8';
+					}}
+					onblur={(e) => {
 						(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
 						(e.currentTarget as HTMLElement).style.color = '#94a3b8';
 					}}
@@ -159,7 +180,7 @@
 		</aside>
 
 		<!-- Main content -->
-		<div class="flex flex-1 flex-col min-w-0">
+		<div class="flex min-w-0 flex-1 flex-col">
 			<!-- Top bar -->
 			<header
 				class="flex items-center gap-4 border-b px-6 py-4"
@@ -173,7 +194,15 @@
 						(e.currentTarget as HTMLElement).style.backgroundColor = '#3995ff20';
 						(e.currentTarget as HTMLElement).style.color = 'white';
 					}}
+					onfocus={(e) => {
+						(e.currentTarget as HTMLElement).style.backgroundColor = '#3995ff20';
+						(e.currentTarget as HTMLElement).style.color = 'white';
+					}}
 					onmouseout={(e) => {
+						(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+						(e.currentTarget as HTMLElement).style.color = '#94a3b8';
+					}}
+					onblur={(e) => {
 						(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
 						(e.currentTarget as HTMLElement).style.color = '#94a3b8';
 					}}
@@ -198,4 +227,7 @@
 			</main>
 		</div>
 	</div>
+{:else}
+	<!-- Not authenticated: render children (login page) -->
+	{@render children()}
 {/if}

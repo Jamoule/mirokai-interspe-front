@@ -149,7 +149,13 @@
 					onmouseover={(e) => {
 						if (!loading) (e.currentTarget as HTMLElement).style.backgroundColor = '#ffd14f';
 					}}
+					onfocus={(e) => {
+						if (!loading) (e.currentTarget as HTMLElement).style.backgroundColor = '#ffd14f';
+					}}
 					onmouseout={(e) => {
+						(e.currentTarget as HTMLElement).style.backgroundColor = '#FFBD14';
+					}}
+					onblur={(e) => {
 						(e.currentTarget as HTMLElement).style.backgroundColor = '#FFBD14';
 					}}
 				>
