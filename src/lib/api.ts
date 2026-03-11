@@ -85,6 +85,13 @@ export interface Admin {
 	created_at: string;
 }
 
+export interface TranscriptSegment {
+	start: number;
+	end: number;
+	speaker: string;
+	text: string;
+}
+
 export interface Module {
 	id: string;
 	number: number;
@@ -93,6 +100,7 @@ export interface Module {
 	media_type: string;
 	media_url: string;
 	image_urls: string[];
+	transcript_segments: TranscriptSegment[] | null;
 	qr_code: string;
 	position_x: number;
 	position_y: number;

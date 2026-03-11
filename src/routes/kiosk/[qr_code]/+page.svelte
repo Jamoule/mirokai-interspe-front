@@ -70,7 +70,12 @@
 	<Character />
 
 	{#if phase === 'audio' && module.media_url && visitor.hasAge}
-		<AudioPlayer src={resolveMediaUrl(module.media_url)} autoplay={true} onEnded={handleAudioEnded} />
+		<AudioPlayer
+			src={resolveMediaUrl(module.media_url)}
+			autoplay={true}
+			onEnded={handleAudioEnded}
+			segments={module.transcript_segments ?? []}
+		/>
 	{/if}
 
 	{#if phase === 'age'}

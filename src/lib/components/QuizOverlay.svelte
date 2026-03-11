@@ -18,9 +18,7 @@
 	let loading = $state(true);
 	let currentIdx = $state(0);
 	let selected = $state<string | null>(null);
-	let isCorrect = $state<boolean | null>(null);
 	let showSecret = $state(false);
-	let finished = $state(false);
 
 	let currentQuestion = $derived(questions[currentIdx]);
 
@@ -39,7 +37,6 @@
 	function selectAnswer(answerId: string, correct: boolean) {
 		if (selected !== null) return;
 		selected = answerId;
-		isCorrect = correct;
 		if (correct && currentQuestion?.secret_word) {
 			showSecret = true;
 			setTimeout(() => {
@@ -55,88 +52,94 @@
 
 	function advance() {
 		selected = null;
-		isCorrect = null;
 		if (currentIdx + 1 < questions.length) {
 			currentIdx++;
 		} else {
-			finished = true;
+			onComplete();
 		}
 	}
 </script>
 
 <div
-	class="fixed inset-0 z-50 flex flex-col items-center justify-center p-6"
-	style="background: rgba(15,11,36,0.95); backdrop-filter: blur(8px);"
+	class="fixed inset-0 z-50 flex flex-col"
+	style="background: rgba(15,11,36,0.97);"
 >
 	{#if loading}
-		<div class="w-10 h-10 rounded-full border-4 border-[#3995FF] border-t-transparent animate-spin"></div>
-	{:else if finished}
-		<div class="flex flex-col items-center gap-6 text-center max-w-md">
-			<div class="text-6xl">⭐</div>
-			<h2
-				class="text-3xl font-bold text-white"
-				style="font-family: var(--font-title, 'AcuminVariableConcept', system-ui, sans-serif);"
-			>
-				Bravo !
-			</h2>
-			<p class="text-white/70">Tu as terminé toutes les questions.</p>
-			<button
-				onclick={onComplete}
-				class="mt-2 rounded-full bg-[#FFBD14] px-8 py-3 font-semibold text-[#0F0B24] transition-transform hover:scale-105 active:scale-95"
-				style="font-family: var(--font-title, 'AcuminVariableConcept', system-ui, sans-serif);"
-			>
-				Continuer
-			</button>
+		<div class="flex flex-1 items-center justify-center">
+			<div class="w-10 h-10 rounded-full border-4 border-[#3995FF] border-t-transparent animate-spin"></div>
 		</div>
 	{:else if currentQuestion}
-		<div class="flex flex-col gap-6 w-full max-w-lg">
-			<div class="text-center">
-				<span class="text-white/50 text-sm">{currentIdx + 1} / {questions.length}</span>
-				<h2
-					class="mt-2 text-xl font-semibold text-white"
-					style="font-family: var(--font-title, 'AcuminVariableConcept', system-ui, sans-serif);"
-				>
-					{currentQuestion.question_text}
-				</h2>
-			</div>
+		<!-- Personnage en haut -->
+		<div class="flex justify-center pt-6 flex-shrink-0">
+			<svg viewBox="0 0 220 320" style="height: 150px; width: auto;" aria-hidden="true">
+				<defs>
+					<linearGradient id="qbodyGrad2" x1="0" y1="0" x2="1" y2="1">
+						<stop offset="0%" stop-color="#1D3AA2" />
+						<stop offset="100%" stop-color="#3995FF" />
+					</linearGradient>
+					<filter id="qglow2">
+						<feGaussianBlur stdDeviation="8" result="blur" />
+						<feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+					</filter>
+				</defs>
+				<ellipse cx="110" cy="290" rx="70" ry="18" fill="#3995FF" opacity="0.3" filter="url(#qglow2)" />
+				<ellipse cx="110" cy="230" rx="65" ry="80" fill="url(#qbodyGrad2)" filter="url(#qglow2)" />
+				<circle cx="110" cy="100" r="55" fill="url(#qbodyGrad2)" filter="url(#qglow2)" />
+				<rect x="92" y="148" width="36" height="30" rx="10" fill="url(#qbodyGrad2)" />
+			</svg>
+		</div>
 
-			{#if showSecret && currentQuestion.secret_word}
+		<!-- Question -->
+		<div class="flex-shrink-0 px-6 pt-2 pb-4 text-center">
+			<span class="text-white/40 text-xs">{currentIdx + 1} / {questions.length}</span>
+			<h2
+				class="mt-1 text-base font-semibold text-white leading-snug"
+				style="font-family: var(--font-title, 'AcuminVariableConcept', system-ui, sans-serif);"
+			>
+				{currentQuestion.question_text}
+			</h2>
+		</div>
+
+		<!-- Mot secret -->
+		{#if showSecret && currentQuestion.secret_word}
+			<div class="flex-shrink-0 flex justify-center px-6 pb-3">
 				<div
-					class="mx-auto rounded-xl px-6 py-3 text-center"
+					class="rounded-xl px-6 py-2 text-center"
 					style="background: #FFBD14; color: #0F0B24; font-family: var(--font-title, 'AcuminVariableConcept', system-ui, sans-serif);"
 				>
-					<div class="text-sm font-semibold opacity-70">Mot secret</div>
-					<div class="text-2xl font-bold">{currentQuestion.secret_word}</div>
+					<div class="text-xs font-semibold opacity-70">Mot secret</div>
+					<div class="text-xl font-bold">{currentQuestion.secret_word}</div>
 				</div>
-			{/if}
-
-			<div class="flex flex-col gap-3">
-				{#each [...currentQuestion.answers].sort((a, b) => a.display_order - b.display_order) as answer}
-					{@const isSelected = selected === answer.id}
-					{@const answerCorrect = answer.is_correct === 1}
-					<button
-						onclick={() => selectAnswer(answer.id, answerCorrect)}
-						disabled={selected !== null}
-						class="w-full rounded-xl border px-5 py-4 text-left text-white transition-all duration-200 disabled:cursor-default"
-						style="
-							background: {isSelected && answerCorrect
-								? 'rgba(34,197,94,0.2)'
-								: isSelected && !answerCorrect
-									? 'rgba(239,68,68,0.2)'
-									: '#1a1540'};
-							border-color: {isSelected && answerCorrect
-								? '#22c55e'
-								: isSelected && !answerCorrect
-									? '#ef4444'
-									: selected !== null && answerCorrect
-										? '#22c55e'
-										: '#3995ff44'};
-						"
-					>
-						{answer.answer_text}
-					</button>
-				{/each}
 			</div>
+		{/if}
+
+		<!-- Réponses 2×2 -->
+		<div class="flex-1 grid grid-cols-2 gap-3 px-4 pb-6 content-start">
+			{#each [...currentQuestion.answers].sort((a, b) => a.display_order - b.display_order) as answer}
+				{@const isSelected = selected === answer.id}
+				{@const answerCorrect = answer.is_correct === 1}
+				<button
+					onclick={() => selectAnswer(answer.id, answerCorrect)}
+					disabled={selected !== null}
+					class="rounded-2xl border p-4 text-sm text-center text-white transition-all duration-200 disabled:cursor-default flex items-center justify-center min-h-20"
+					style="
+						background: {isSelected && answerCorrect
+							? 'rgba(34,197,94,0.2)'
+							: isSelected && !answerCorrect
+								? 'rgba(239,68,68,0.2)'
+								: '#1a1540'};
+						border-color: {isSelected && answerCorrect
+							? '#22c55e'
+							: isSelected && !answerCorrect
+								? '#ef4444'
+								: selected !== null && answerCorrect
+									? '#22c55e'
+									: '#3995ff44'};
+					"
+				>
+					{answer.answer_text}
+				</button>
+			{/each}
 		</div>
 	{/if}
 </div>

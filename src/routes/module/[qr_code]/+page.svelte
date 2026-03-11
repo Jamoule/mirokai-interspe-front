@@ -61,7 +61,12 @@
 	<Character />
 
 	{#if audioReady && module.media_url && visitorPhase === 'audio'}
-		<AudioPlayer src={resolveMediaUrl(module.media_url)} autoplay={true} onEnded={handleAudioEnded} />
+		<AudioPlayer
+			src={resolveMediaUrl(module.media_url)}
+			autoplay={true}
+			onEnded={handleAudioEnded}
+			segments={module.transcript_segments ?? []}
+		/>
 	{/if}
 
 	<PlanBubble onclick={() => (showPlan = true)} />
