@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import { draggable } from '@neodrag/svelte';
 	import { api, type Module } from '$lib/api';
 	import { Save, Upload } from 'lucide-svelte';
 
@@ -15,6 +16,7 @@
 	}
 
 	let modules = $state<Module[]>([]);
+	// positions[id] = current { x, y } coordinates (top-left of marker)
 	let positions = $state<Record<string, { x: number; y: number }>>({});
 	let planImageUrl = $state('');
 	let loading = $state(true);
@@ -29,42 +31,13 @@
 			for (const m of mods) {
 				positions[m.id] = { x: m.position_x ?? 0, y: m.position_y ?? 0 };
 			}
-		} catch (err) {
+		} catch {
 			toast.error('Erreur lors du chargement');
 		} finally {
 			loading = false;
 		}
 	});
 
-	// --- Drag & drop ---
-	let containerEl: HTMLDivElement | undefined = $state();
-	let dragging: { id: string; offsetX: number; offsetY: number } | null = $state(null);
-
-	function onMarkerPointerDown(e: PointerEvent, moduleId: string) {
-		e.preventDefault();
-		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-		const rect = containerEl!.getBoundingClientRect();
-		const pos = positions[moduleId];
-		dragging = {
-			id: moduleId,
-			offsetX: e.clientX - rect.left - pos.x,
-			offsetY: e.clientY - rect.top - pos.y
-		};
-	}
-
-	function onContainerPointerMove(e: PointerEvent) {
-		if (!dragging || !containerEl) return;
-		const rect = containerEl.getBoundingClientRect();
-		const x = Math.max(0, Math.min(CONTAINER_W, e.clientX - rect.left - dragging.offsetX));
-		const y = Math.max(0, Math.min(CONTAINER_H, e.clientY - rect.top - dragging.offsetY));
-		positions[dragging.id] = { x, y };
-	}
-
-	function onContainerPointerUp() {
-		dragging = null;
-	}
-
-	// --- Save positions ---
 	async function handleSave() {
 		saving = true;
 		try {
@@ -82,7 +55,6 @@
 		}
 	}
 
-	// --- Upload plan image ---
 	async function handlePlanUpload(e: Event) {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
@@ -112,11 +84,10 @@
 		<div>
 			<h1 class="text-2xl font-bold text-white">Plan d'exposition</h1>
 			<p class="mt-1 text-sm" style="color: #94a3b8">
-				Positionnez les modules en les faisant glisser sur le plan
+				Faites glisser les modules pour les positionner sur le plan
 			</p>
 		</div>
 		<div class="flex items-center gap-3">
-			<!-- Upload image du plan -->
 			<label
 				class="flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors"
 				style="border-color: #3995ff33; color: #3995FF; background-color: #3995ff10;"
@@ -137,7 +108,6 @@
 				/>
 			</label>
 
-			<!-- Save -->
 			<button
 				onclick={handleSave}
 				disabled={saving || loading}
@@ -159,82 +129,87 @@
 
 	{#if loading}
 		<div class="flex items-center justify-center py-20">
-			<div class="h-8 w-8 animate-spin rounded-full border-4" style="border-color: #3995FF; border-top-color: transparent"></div>
+			<div
+				class="h-8 w-8 animate-spin rounded-full border-4"
+				style="border-color: #3995FF; border-top-color: transparent"
+			></div>
 		</div>
 	{:else}
-		<!-- Plan canvas wrapper (scrollable if viewport too small) -->
+		<!-- Canvas wrapper -->
 		<div
 			class="rounded-xl border overflow-auto"
 			style="background-color: #1a1540; border-color: #3995ff22;"
 		>
-			<!-- Fixed-size canvas -->
 			<div
-				bind:this={containerEl}
-				class="relative select-none"
-				style="width: {CONTAINER_W}px; height: {CONTAINER_H}px; cursor: {dragging ? 'grabbing' : 'default'};"
-				onpointermove={onContainerPointerMove}
-				onpointerup={onContainerPointerUp}
-				onpointerleave={onContainerPointerUp}
+				class="relative"
+				style="width: {CONTAINER_W}px; height: {CONTAINER_H}px;"
 			>
 				<!-- Background image -->
 				{#if planImageUrl}
 					<img
 						src={resolveUrl(planImageUrl)}
 						alt="Plan du parcours"
-						class="absolute inset-0 h-full w-full"
-						style="object-fit: contain; object-position: center; pointer-events: none;"
 						draggable="false"
+						class="absolute inset-0 h-full w-full select-none"
+						style="object-fit: contain; object-position: center; pointer-events: none; user-select: none;"
 					/>
 				{:else}
 					<div class="absolute inset-0 flex items-center justify-center">
-						<div class="text-center" style="color: #94a3b840">
-							<div class="text-6xl mb-3">🗺️</div>
-							<p class="text-sm">Aucune image de plan — utilisez le bouton "Changer l'image du plan"</p>
+						<div class="text-center" style="color: #94a3b850">
+							<div class="text-5xl mb-3">🗺</div>
+							<p class="text-sm">Uploadez une image de plan via le bouton ci-dessus</p>
 						</div>
 					</div>
 				{/if}
 
-				<!-- Grid overlay (subtle) -->
+				<!-- Dot grid overlay -->
 				<div
 					class="absolute inset-0 pointer-events-none"
-					style="background-image: radial-gradient(circle, #3995ff18 1px, transparent 1px); background-size: 40px 40px;"
+					style="background-image: radial-gradient(circle, #3995ff20 1px, transparent 1px); background-size: 40px 40px;"
 				></div>
 
 				<!-- Module markers -->
 				{#each modules as mod (mod.id)}
 					{@const pos = positions[mod.id] ?? { x: 0, y: 0 }}
-					{@const isDragging = dragging?.id === mod.id}
 					<div
-						class="absolute flex flex-col items-center"
-						style="
-							left: {pos.x}px;
-							top: {pos.y}px;
-							transform: translate(-50%, -50%);
-							cursor: grab;
-							z-index: {isDragging ? 10 : 1};
-							touch-action: none;
-						"
-						onpointerdown={(e) => onMarkerPointerDown(e, mod.id)}
+						use:draggable={{
+							bounds: 'parent',
+							position: { x: pos.x, y: pos.y },
+							onDrag: ({ offsetX, offsetY }) => {
+								positions[mod.id] = { x: offsetX, y: offsetY };
+							}
+						}}
+						class="absolute top-0 left-0"
+						style="cursor: grab; touch-action: none; z-index: 2;"
+						title="{mod.number} — {mod.name}"
 					>
-						<!-- Circle badge -->
+						<!-- Badge -->
 						<div
-							class="flex items-center justify-center rounded-full text-sm font-bold shadow-lg transition-transform"
+							class="flex items-center justify-center rounded-full font-bold text-sm shadow-lg"
 							style="
 								width: 36px;
 								height: 36px;
-								background: {isDragging ? '#ffd14f' : '#FFBD14'};
+								background-color: #FFBD14;
 								color: #0F0B24;
-								border: 2px solid {isDragging ? 'white' : 'rgba(255,255,255,0.4)'};
-								transform: scale({isDragging ? 1.15 : 1});
-								box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+								border: 2px solid rgba(255,255,255,0.5);
+								box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+								user-select: none;
 							"
 						>
 							{mod.number}
 						</div>
 						<!-- Label -->
 						<div
-							class="mt-1 max-w-[100px] truncate rounded px-1.5 py-0.5 text-center text-xs font-medium"
-							style="background: rgba(15,11,36,0.82); backdrop-filter: blur(4px); color: white;"
+							class="mt-1 rounded px-1.5 py-0.5 text-xs font-medium text-center whitespace-nowrap"
+							style="
+								background: rgba(15,11,36,0.85);
+								backdrop-filter: blur(4px);
+								color: white;
+								max-width: 96px;
+								overflow: hidden;
+								text-overflow: ellipsis;
+								user-select: none;
+							"
 						>
 							{mod.name}
 						</div>
@@ -257,7 +232,7 @@
 						{@const pos = positions[mod.id] ?? { x: 0, y: 0 }}
 						<div
 							class="flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs"
-							style="background-color: #221c4a; color: #94a3b8;"
+							style="background-color: #221c4a;"
 						>
 							<span
 								class="flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold"
@@ -266,7 +241,7 @@
 								{mod.number}
 							</span>
 							<span class="text-white">{mod.name}</span>
-							<span style="color: #94a3b860">
+							<span style="color: #94a3b860; font-variant-numeric: tabular-nums;">
 								{Math.round(pos.x)}, {Math.round(pos.y)}
 							</span>
 						</div>

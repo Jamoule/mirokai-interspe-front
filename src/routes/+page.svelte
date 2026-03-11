@@ -36,18 +36,24 @@
 
 	<Character />
 
-	{#each modules.filter((m) => m.is_active) as mod}
+	{#each modules.filter((m) => m.is_active) as mod (mod.id)}
+		{@const done = visitor.hasCompleted(mod.id)}
 		<button
 			onclick={() => goto('/module/' + mod.qr_code)}
-			class="absolute flex items-center justify-center w-10 h-10 rounded-full shadow-lg transition-transform hover:scale-110 active:scale-95 -translate-x-1/2 -translate-y-1/2"
-			style="left: {mod.position_x}%; top: {mod.position_y}%; background: {visitor.hasCompleted(mod.id) ? '#22c55e' : '#3995FF'};"
+			class="absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full font-bold shadow-lg transition-transform hover:scale-125 active:scale-95"
+			style="
+				left: {(mod.position_x / 1000) * 100}%;
+				top: {(mod.position_y / 700) * 100}%;
+				width: 40px;
+				height: 40px;
+				background: {done ? '#22c55e' : '#FFBD14'};
+				color: {done ? 'white' : '#0F0B24'};
+				border: 2.5px solid rgba(255,255,255,0.6);
+				font-size: 14px;
+			"
 			title={mod.name}
 		>
-			{#if visitor.hasCompleted(mod.id)}
-				<span class="text-white text-sm font-bold">✓</span>
-			{:else}
-				<span class="text-white text-sm font-bold">{mod.number}</span>
-			{/if}
+			{done ? '✓' : mod.number}
 		</button>
 	{/each}
 

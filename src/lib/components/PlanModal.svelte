@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { visitorApi } from '$lib/visitor-api';
-	import type { Module, Settings } from '$lib/api';
+	import { visitorApi, resolveMediaUrl } from '$lib/visitor-api';
+	import type { Module } from '$lib/api';
 	import { X } from 'lucide-svelte';
 
 	let {
@@ -14,15 +14,17 @@
 	} = $props();
 
 	let modules = $state<Module[]>([]);
-	let settings = $state<Settings | null>(null);
+	let planImageUrl = $state('');
 	let loading = $state(true);
 
 	onMount(async () => {
 		try {
-			[modules, settings] = await Promise.all([
+			const [mods, settings] = await Promise.all([
 				visitorApi.getModules(),
-				visitorApi.getSettings().catch(() => null) as Promise<Settings | null>
+				visitorApi.getSettings().catch(() => null)
 			]);
+			modules = mods;
+			planImageUrl = resolveMediaUrl(settings?.plan_image_url);
 		} catch {
 			modules = [];
 		}
@@ -33,48 +35,85 @@
 		goto('/module/' + qr_code);
 		onClose();
 	}
+
+	// Converts pixel coordinates (1000×700 reference) to percentages
+	function px(x: number, ref: number) {
+		return `${(x / ref) * 100}%`;
+	}
 </script>
 
-<div class="fixed inset-0 z-50">
-	{#if settings?.plan_image_url}
-		<div
-			class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-			style="background-image: url('{settings.plan_image_url}')"
-		></div>
-		<div class="absolute inset-0 bg-[#0F0B24]/60"></div>
-	{:else}
-		<div class="absolute inset-0 bg-[#0F0B24]"></div>
-	{/if}
-
+<!-- Backdrop -->
+<div
+	class="fixed inset-0 z-50 flex items-center justify-center"
+	style="background: rgba(15,11,36,0.85); backdrop-filter: blur(4px);"
+>
+	<!-- Close -->
 	<button
 		onclick={onClose}
-		class="absolute top-4 right-4 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors"
+		class="absolute top-4 right-4 z-10 flex items-center justify-center w-10 h-10 rounded-full transition-colors"
+		style="background: rgba(255,255,255,0.15); color: white;"
 		aria-label="Fermer"
 	>
 		<X size={20} />
 	</button>
 
 	{#if loading}
-		<div class="absolute inset-0 flex items-center justify-center">
-			<div class="w-10 h-10 rounded-full border-4 border-[#3995FF] border-t-transparent animate-spin"></div>
-		</div>
+		<div class="w-10 h-10 rounded-full border-4 border-[#3995FF] border-t-transparent animate-spin"></div>
 	{:else}
-		<div class="relative h-full w-full">
-			{#each modules.filter((m) => m.is_active) as mod}
+		<!--
+			Plan container: fills viewport while keeping 1000:700 ratio.
+			Markers use % derived from (position_x / 1000) and (position_y / 700)
+			so they align perfectly with the admin editor reference space.
+		-->
+		<div
+			class="relative overflow-hidden rounded-xl shadow-2xl"
+			style="
+				width: min(calc(100dvw - 2rem), calc((100dvh - 2rem) * 1000 / 700));
+				aspect-ratio: 1000 / 700;
+			"
+		>
+			<!-- Background image -->
+			{#if planImageUrl}
+				<img
+					src={planImageUrl}
+					alt="Plan du parcours"
+					draggable="false"
+					class="absolute inset-0 w-full h-full"
+					style="object-fit: cover; pointer-events: none; user-select: none;"
+				/>
+				<div class="absolute inset-0" style="background: rgba(15,11,36,0.35);"></div>
+			{:else}
+				<div class="absolute inset-0" style="background: #1a1540;"></div>
+			{/if}
+
+			<!-- Module markers -->
+			{#each modules.filter((m) => m.is_active) as mod (mod.id)}
+				{@const done = completedIds.includes(mod.id)}
 				<button
 					onclick={() => navigate(mod.qr_code)}
-					class="absolute flex items-center justify-center w-8 h-8 rounded-full shadow-lg transition-transform hover:scale-110 active:scale-95 -translate-x-1/2 -translate-y-1/2 group"
-					style="left: {mod.position_x}%; top: {mod.position_y}%; background: {completedIds.includes(mod.id) ? '#22c55e' : '#3995FF'};"
+					class="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center"
+					style="left: {px(mod.position_x, 1000)}; top: {px(mod.position_y, 700)}; z-index: 2;"
 					title={mod.name}
 				>
-					{#if completedIds.includes(mod.id)}
-						<span class="text-white text-xs font-bold">✓</span>
-					{:else}
-						<span class="text-white text-xs font-bold">{mod.number}</span>
-					{/if}
+					<!-- Badge -->
 					<div
-						class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-						style="background: rgba(15,11,36,0.9);"
+						class="flex items-center justify-center rounded-full font-bold shadow-lg transition-transform group-hover:scale-125 group-active:scale-95"
+						style="
+							width: 40px;
+							height: 40px;
+							background: {done ? '#22c55e' : '#FFBD14'};
+							color: {done ? 'white' : '#0F0B24'};
+							border: 2.5px solid rgba(255,255,255,0.6);
+							box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+							font-size: 14px;
+						"
+					>
+						{#if done}✓{:else}{mod.number}{/if}
+					</div>
+					<!-- Tooltip nom -->
+					<div
+						class="mt-1 rounded px-2 py-0.5 text-xs font-medium text-center whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+						style="background: rgba(15,11,36,0.9); color: white; max-width: 120px; overflow: hidden; text-overflow: ellipsis;"
 					>
 						{mod.name}
 					</div>
