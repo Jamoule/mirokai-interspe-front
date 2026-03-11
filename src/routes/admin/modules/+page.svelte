@@ -5,6 +5,7 @@
 	import { Plus, Pencil, Trash2, Eye, ToggleLeft, ToggleRight, X, Upload } from 'lucide-svelte';
 
 	let modules = $state<Module[]>([]);
+	let sortedModules = $derived([...modules].sort((a, b) => a.number - b.number));
 	let loading = $state(true);
 	let showModal = $state(false);
 	let editingModule = $state<Module | null>(null);
@@ -199,7 +200,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each modules.sort((a, b) => a.number - b.number) as module}
+						{#each sortedModules as module}
 							<tr
 								style="border-bottom: 1px solid #3995ff11; transition: background-color 0.15s"
 								onmouseover={(e) =>
@@ -456,38 +457,6 @@
 								disabled={uploadingMedia}
 							/>
 						</label>
-					</div>
-				</div>
-
-				<!-- Position -->
-				<div class="grid grid-cols-2 gap-4">
-					<div class="flex flex-col gap-1.5">
-						<label class="text-sm font-medium" style="color: #94a3b8">Position X (0–1)</label>
-						<input
-							type="number"
-							bind:value={form.position_x}
-							min="0"
-							max="1"
-							step="0.01"
-							class="rounded-lg border px-3 py-2 text-sm text-white outline-none"
-							style="background-color: #221c4a; border-color: #3995ff33;"
-							onfocus={(e) => ((e.target as HTMLInputElement).style.borderColor = '#3995FF')}
-							onblur={(e) => ((e.target as HTMLInputElement).style.borderColor = '#3995ff33')}
-						/>
-					</div>
-					<div class="flex flex-col gap-1.5">
-						<label class="text-sm font-medium" style="color: #94a3b8">Position Y (0–1)</label>
-						<input
-							type="number"
-							bind:value={form.position_y}
-							min="0"
-							max="1"
-							step="0.01"
-							class="rounded-lg border px-3 py-2 text-sm text-white outline-none"
-							style="background-color: #221c4a; border-color: #3995ff33;"
-							onfocus={(e) => ((e.target as HTMLInputElement).style.borderColor = '#3995FF')}
-							onblur={(e) => ((e.target as HTMLInputElement).style.borderColor = '#3995ff33')}
-						/>
 					</div>
 				</div>
 
