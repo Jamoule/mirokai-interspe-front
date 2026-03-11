@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Play, Pause } from 'lucide-svelte';
 
-	let { src, autoplay = true }: { src: string; autoplay?: boolean } = $props();
+	let { src, autoplay = true, onEnded }: { src: string; autoplay?: boolean; onEnded?: () => void } = $props();
 
 	let audio: HTMLAudioElement | undefined = $state();
 	let playing = $state(false);
@@ -42,7 +42,7 @@
 	}
 </script>
 
-<audio bind:this={audio} {src} onended={() => (playing = false)}></audio>
+<audio bind:this={audio} {src} onended={() => { playing = false; onEnded?.(); }}></audio>
 
 <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-25">
 	<button

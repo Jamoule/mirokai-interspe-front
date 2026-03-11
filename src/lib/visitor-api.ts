@@ -1,4 +1,4 @@
-import type { Module, Question } from './api';
+import type { Module, Question, Settings } from './api';
 
 const BASE = 'http://localhost:5000/api';
 
@@ -17,5 +17,6 @@ export const visitorApi = {
 	getModuleByQr: (qr_code: string) => request<Module>(`/modules/qr/${qr_code}`),
 	getModules: () => request<Module[]>('/modules'),
 	getQuestions: (id: string, age: string) =>
-		request<Question[]>(`/modules/${id}/questions?age_group=${encodeURIComponent(age)}`)
+		request<Question[]>(`/modules/${id}/questions?age_group=${encodeURIComponent(age)}`),
+	getSettings: () => request<Settings>('/settings')
 };
