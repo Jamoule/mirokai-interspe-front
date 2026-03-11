@@ -1,10 +1,34 @@
 <script lang="ts">
-	let { children }: { children?: import('svelte').Snippet } = $props();
+	let {
+		videoSrc,
+		playing = false
+	}: {
+		videoSrc?: string;
+		playing?: boolean;
+	} = $props();
+
+	let videoEl: HTMLVideoElement | undefined = $state();
+
+	$effect(() => {
+		if (!videoEl) return;
+		if (playing) {
+			videoEl.play().catch(() => {});
+		} else {
+			videoEl.pause();
+		}
+	});
 </script>
 
 <div class="pointer-events-none absolute inset-0 flex items-end justify-center pb-8 z-20">
-	{#if children}
-		{@render children()}
+	{#if videoSrc}
+		<video
+			bind:this={videoEl}
+			src={videoSrc}
+			muted
+			loop
+			playsinline
+			class="h-full w-auto object-contain pointer-events-none"
+		></video>
 	{:else}
 		<svg
 			width="220"

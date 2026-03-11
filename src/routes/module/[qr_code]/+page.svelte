@@ -9,7 +9,7 @@
 	import AgeSelectionOverlay from '$lib/components/AgeSelectionOverlay.svelte';
 	import QuizOverlay from '$lib/components/QuizOverlay.svelte';
 	import PlanModal from '$lib/components/PlanModal.svelte';
-	import { resolveMediaUrl } from '$lib/visitor-api';
+	import { resolveMediaUrl, AVATAR_VIDEO_URL } from '$lib/visitor-api';
 	import type { AgeGroup } from '$lib/visitor.svelte';
 
 	let { data } = $props();
@@ -20,6 +20,7 @@
 	let overlayVisible = $state(false);
 	let audioReady = $state(false);
 	let showPlan = $state(false);
+	let isAudioPlaying = $state(false);
 
 	onMount(() => {
 		visitor.init();
@@ -58,7 +59,7 @@
 		<ModuleBackground imageUrls={module.image_urls} />
 	{/key}
 
-	<Character />
+	<Character videoSrc={AVATAR_VIDEO_URL} playing={isAudioPlaying} />
 
 	{#if audioReady && module.media_url && visitorPhase === 'audio'}
 		<AudioPlayer
@@ -66,6 +67,7 @@
 			autoplay={true}
 			onEnded={handleAudioEnded}
 			segments={module.transcript_segments ?? []}
+			onPlayingChange={(v) => (isAudioPlaying = v)}
 		/>
 	{/if}
 

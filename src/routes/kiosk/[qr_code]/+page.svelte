@@ -6,7 +6,7 @@
 	import AudioPlayer from '$lib/components/AudioPlayer.svelte';
 	import AgeSelectionOverlay from '$lib/components/AgeSelectionOverlay.svelte';
 	import QuizOverlay from '$lib/components/QuizOverlay.svelte';
-	import { resolveMediaUrl } from '$lib/visitor-api';
+	import { resolveMediaUrl, AVATAR_VIDEO_URL } from '$lib/visitor-api';
 	import type { AgeGroup } from '$lib/visitor.svelte';
 
 	let { data } = $props();
@@ -14,6 +14,7 @@
 
 	type KioskPhase = 'age' | 'audio' | 'quiz' | 'complete';
 	let phase = $state<KioskPhase>('age');
+	let isAudioPlaying = $state(false);
 	let countdown = $state(5);
 	let countdownInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -67,7 +68,7 @@
 		<ModuleBackground imageUrls={module.image_urls} />
 	{/key}
 
-	<Character />
+	<Character videoSrc={AVATAR_VIDEO_URL} playing={isAudioPlaying} />
 
 	{#if phase === 'audio' && module.media_url && visitor.hasAge}
 		<AudioPlayer
@@ -75,6 +76,7 @@
 			autoplay={true}
 			onEnded={handleAudioEnded}
 			segments={module.transcript_segments ?? []}
+			onPlayingChange={(v) => (isAudioPlaying = v)}
 		/>
 	{/if}
 

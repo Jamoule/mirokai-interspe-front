@@ -6,12 +6,14 @@
 		src,
 		autoplay = true,
 		onEnded,
-		segments = []
+		segments = [],
+		onPlayingChange
 	}: {
 		src: string;
 		autoplay?: boolean;
 		onEnded?: () => void;
 		segments?: TranscriptSegment[];
+		onPlayingChange?: (playing: boolean) => void;
 	} = $props();
 
 	let media: HTMLVideoElement | undefined = $state();
@@ -38,8 +40,8 @@
 		if (autoplay) {
 			media
 				.play()
-				.then(() => { playing = true; })
-				.catch(() => { playing = false; });
+				.then(() => { playing = true; onPlayingChange?.(true); })
+				.catch(() => { playing = false; onPlayingChange?.(false); });
 		}
 	});
 
@@ -48,11 +50,12 @@
 		if (playing) {
 			media.pause();
 			playing = false;
+			onPlayingChange?.(false);
 		} else {
 			media
 				.play()
-				.then(() => { playing = true; })
-				.catch(() => { playing = false; });
+				.then(() => { playing = true; onPlayingChange?.(true); })
+				.catch(() => { playing = false; onPlayingChange?.(false); });
 		}
 	}
 
@@ -71,7 +74,7 @@
 <video
 	bind:this={media}
 	{src}
-	onended={() => { playing = false; onEnded?.(); }}
+	onended={() => { playing = false; onPlayingChange?.(false); onEnded?.(); }}
 	ontimeupdate={() => { currentTime = media?.currentTime ?? 0; }}
 	style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"
 ></video>

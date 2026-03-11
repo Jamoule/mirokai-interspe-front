@@ -2,6 +2,7 @@ import type { Module, Question, Settings } from './api';
 
 const BASE = 'http://localhost:5000/api';
 export const BACKEND_ORIGIN = 'http://localhost:5000';
+export const AVATAR_VIDEO_URL = 'http://localhost:5000/uploads/avatar/0311.mov';
 
 export function resolveMediaUrl(url: string | null | undefined): string {
 	if (!url) return '';
