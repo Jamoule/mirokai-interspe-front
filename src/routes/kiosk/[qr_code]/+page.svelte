@@ -6,6 +6,7 @@
 	import AudioPlayer from '$lib/components/AudioPlayer.svelte';
 	import AgeSelectionOverlay from '$lib/components/AgeSelectionOverlay.svelte';
 	import QuizOverlay from '$lib/components/QuizOverlay.svelte';
+	import { resolveMediaUrl } from '$lib/visitor-api';
 	import type { AgeGroup } from '$lib/visitor.svelte';
 
 	let { data } = $props();
@@ -69,7 +70,7 @@
 	<Character />
 
 	{#if phase === 'audio' && module.media_url && visitor.hasAge}
-		<AudioPlayer src={module.media_url} autoplay={true} onEnded={handleAudioEnded} />
+		<AudioPlayer src={resolveMediaUrl(module.media_url)} autoplay={true} onEnded={handleAudioEnded} />
 	{/if}
 
 	{#if phase === 'age'}

@@ -9,6 +9,7 @@
 	import AgeSelectionOverlay from '$lib/components/AgeSelectionOverlay.svelte';
 	import QuizOverlay from '$lib/components/QuizOverlay.svelte';
 	import PlanModal from '$lib/components/PlanModal.svelte';
+	import { resolveMediaUrl } from '$lib/visitor-api';
 	import type { AgeGroup } from '$lib/visitor.svelte';
 
 	let { data } = $props();
@@ -60,7 +61,7 @@
 	<Character />
 
 	{#if audioReady && module.media_url && visitorPhase === 'audio'}
-		<AudioPlayer src={module.media_url} autoplay={true} onEnded={handleAudioEnded} />
+		<AudioPlayer src={resolveMediaUrl(module.media_url)} autoplay={true} onEnded={handleAudioEnded} />
 	{/if}
 
 	<PlanBubble onclick={() => (showPlan = true)} />
