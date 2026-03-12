@@ -46,6 +46,7 @@ src/routes/
 | `AudioPlayer.svelte` | Bouton play/pause `#FFBD14`, autoplay, segments transcript | z-25 |
 | `PlanBubble.svelte` | Bouton fixe top-right, ouvre PlanModal | z-30 |
 | `AgeSelectionOverlay.svelte` | Sélection tranche d'âge au 1er lancement | z-40 |
+| `EmailCaptureOverlay.svelte` | Capture email visiteur, première vue affichée | z-50 |
 | `QuizOverlay.svelte` | Quiz adapté par âge, valide réponse, affiche mot secret | z-50 |
 | `PlanModal.svelte` | Plan du parcours avec modules positionnés, drag admin | z-50 |
 
@@ -149,17 +150,18 @@ L'expérience se déroule en **5 vues séquentielles** au premier lancement, pui
 
 ---
 
-### Vue 1 — Capture email (`/`) · **À implémenter**
+### Vue 1 — Capture email (`/`) · **Implémenté** (`EmailCaptureOverlay.svelte`)
 
 **Première chose vue par le visiteur.** Plein écran, fond dégradé bleu/violet.
 
-- Champ email + bouton "Commencer"
+- Logo Enchanted Tools + titre "BIENVENUE DANS L'AVENTURE MIROKAI"
+- Champ email + bouton "Lancer l'aventure"
 - Email envoyé à l'API pour recevoir la photo souvenir en fin de visite
 - Stocké localement (`mirokai_email`) pour ne pas redemander à chaque page
-- Bouton "Passer" possible (email optionnel)
+- Lien "Passer cette étape" (email optionnel)
 - Après validation → Vue 2 (Age)
 
-> **État** : non implémenté. À créer dans `/` ou comme overlay prioritaire.
+> **Composant** : `src/lib/components/EmailCaptureOverlay.svelte`
 
 ---
 

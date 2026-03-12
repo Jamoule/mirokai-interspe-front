@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { visitor } from '$lib/visitor.svelte';
+	import EmailCaptureOverlay from '$lib/components/EmailCaptureOverlay.svelte';
 	import AgeSelectionOverlay from '$lib/components/AgeSelectionOverlay.svelte';
 	import PlanModal from '$lib/components/PlanModal.svelte';
 	import type { AgeGroup } from '$lib/visitor.svelte';
@@ -8,17 +9,38 @@
 	let { data } = $props();
 	let settings = $derived(data.settings ?? null);
 
-	let overlayVisible = $state(false);
+	let showEmail = $state(false);
+	let showAge = $state(false);
 	let showPlan = $state(false);
 
 	onMount(() => {
 		visitor.init();
-		overlayVisible = !visitor.hasAge;
+		if (!visitor.hasEmail) {
+			showEmail = true;
+		} else if (!visitor.hasAge) {
+			showAge = true;
+		}
 	});
+
+	function handleEmailSubmit(email: string) {
+		visitor.setEmail(email);
+		showEmail = false;
+		if (!visitor.hasAge) {
+			showAge = true;
+		}
+	}
+
+	function handleEmailSkip() {
+		visitor.skipEmail();
+		showEmail = false;
+		if (!visitor.hasAge) {
+			showAge = true;
+		}
+	}
 
 	function handleAgeSelect(group: AgeGroup) {
 		visitor.setAge(group);
-		overlayVisible = false;
+		showAge = false;
 	}
 </script>
 
@@ -70,7 +92,11 @@
 		</div>
 	</div>
 
-	{#if overlayVisible}
+	{#if showEmail}
+		<EmailCaptureOverlay onsubmit={handleEmailSubmit} onskip={handleEmailSkip} />
+	{/if}
+
+	{#if showAge}
 		<AgeSelectionOverlay onselect={handleAgeSelect} />
 	{/if}
 
