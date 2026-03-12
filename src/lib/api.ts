@@ -1,4 +1,4 @@
-const BASE = 'http://localhost:5000/api';
+const BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api').replace(/\/?$/, '').replace(/\/api$/, '') + '/api';
 
 function getToken(): string | null {
 	if (typeof localStorage === 'undefined') return null;
