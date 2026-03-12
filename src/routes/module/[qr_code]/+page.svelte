@@ -93,18 +93,21 @@
 	</header>
 
 	<!-- Central content -->
-	<div class="relative z-10 flex flex-1 flex-col items-center justify-center gap-6">
+	<div class="relative z-10 flex flex-1 flex-col items-center w-full {visitorPhase === 'quiz' ? '' : 'justify-center gap-6'}">
 		<!-- Character -->
 		<img
 			src="/images/miroki-character.jpg"
 			alt="Miroki"
-			class="pointer-events-none h-[353px] w-[182px] object-contain"
+			class="pointer-events-none object-contain transition-all duration-300 {visitorPhase === 'quiz' ? 'mt-4 h-[140px] w-auto' : 'h-[353px] w-[182px]'}"
 			draggable="false"
 		/>
 
-		<!-- Speech bubble -->
+		<!-- Quiz (inline, phase quiz) -->
+		{#if visitorPhase === 'quiz' && visitor.ageGroup}
+			<QuizOverlay moduleId={module.id} ageGroup={visitor.ageGroup} onComplete={handleQuizComplete} />
+		{/if}
 
-		<!-- Action button: visible in complete phase -->
+		<!-- Action buttons: visible in complete phase -->
 		{#if visitorPhase === 'complete'}
 			<button
 				onclick={() => goto('/')}
@@ -135,10 +138,6 @@
 
 {#if overlayVisible}
 	<AgeSelectionOverlay onselect={handleAgeSelect} />
-{/if}
-
-{#if visitorPhase === 'quiz' && visitor.ageGroup}
-	<QuizOverlay moduleId={module.id} ageGroup={visitor.ageGroup} onComplete={handleQuizComplete} />
 {/if}
 
 {#if showPlan}
