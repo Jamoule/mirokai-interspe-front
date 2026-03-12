@@ -1,4 +1,4 @@
-export type AgeGroup = '5-7' | '11-13' | '14+';
+export type AgeGroup = '3-4' | '5-7' | '8-10' | '11-13' | '14+';
 
 const STORAGE_KEY = 'mirokai_age_group';
 const COMPLETED_KEY = 'mirokai_completed';
@@ -33,7 +33,13 @@ function createVisitor() {
 		init() {
 			if (typeof localStorage !== 'undefined') {
 				const stored = localStorage.getItem(STORAGE_KEY);
-				if (stored === '5-7' || stored === '11-13' || stored === '14+') {
+				if (
+					stored === '3-4' ||
+					stored === '5-7' ||
+					stored === '8-10' ||
+					stored === '11-13' ||
+					stored === '14+'
+				) {
 					ageGroup = stored;
 				}
 				const storedEmail = localStorage.getItem(EMAIL_KEY);

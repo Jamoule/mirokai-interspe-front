@@ -65,7 +65,7 @@ visitor.markComplete(id)    // persiste en localStorage
 visitor.clearProgress()
 ```
 
-- `AgeGroup = '5-7' | '11-13' | '14+'`
+- `AgeGroup = '3-4' | '5-7' | '8-10' | '11-13' | '14+'`
 - localStorage keys : `mirokai_age_group`, `mirokai_completed`
 
 ### `auth` (`src/lib/auth.svelte.ts`)
@@ -167,11 +167,13 @@ L'expérience se déroule en **5 vues séquentielles** au premier lancement, pui
 
 ### Vue 2 — Sélection de l'âge · **Implémenté** (`AgeSelectionOverlay.svelte`)
 
-Overlay plein écran `z-40`, `backdrop-blur`, fond `#0F0B24/92`.
+Plein écran, même fond dégradé bleu/violet que Vue 1. Logo Enchanted Tools en haut.
 
-- 3 boutons : Enfant (5–10 ans → `'5-7'`), Ado (11–13 ans → `'11-13'`), Adulte (14+ → `'14+'`)
+- Titre "POUR QUI COMMENCE L'AVENTURE ?" + sous-titre explicatif
+- 4 options checkbox arrondies : 3–4 ans (`'3-4'`), 5–7 ans (`'5-7'`), 8–10 ans (`'8-10'`), Autre (`'14+'`)
+- Bouton "Continuer" (désactivé tant qu'aucune option sélectionnée)
 - Sélection persistée dans `localStorage` (`mirokai_age_group`)
-- S'affiche uniquement si `!visitor.hasAge`
+- S'affiche uniquement si `!visitor.hasAge` (et après la capture email)
 - Après sélection → Vue 3 (Introduction)
 
 > **Composant** : `src/lib/components/AgeSelectionOverlay.svelte`
