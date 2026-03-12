@@ -27,9 +27,10 @@
 </script>
 
 <div
-	class="fixed inset-0 z-50 flex flex-col items-center justify-between px-6 py-6"
+	class="fixed inset-0 z-50 flex flex-col items-center"
 	style="background: linear-gradient(245.55deg, var(--color-primary) 12.65%, #a03379 104.49%)"
 >
+<div class="flex h-full w-full max-w-[480px] flex-col items-center justify-between px-6 py-6">
 	<!-- Logo -->
 	<div class="mt-8 flex flex-col items-center">
 		<div class="flex h-[69px] w-[168px] flex-col items-center justify-between">
@@ -90,4 +91,5 @@
 			Passer cette étape
 		</button>
 	</form>
+</div>
 </div>
