@@ -3,10 +3,12 @@ export type AgeGroup = '3-4' | '5-7' | '8-10' | '11-13' | '14+';
 const STORAGE_KEY = 'mirokai_age_group';
 const COMPLETED_KEY = 'mirokai_completed';
 const EMAIL_KEY = 'mirokai_email';
+const INTRO_KEY = 'mirokai_intro_done';
 
 function createVisitor() {
 	let ageGroup = $state<AgeGroup | null>(null);
 	let email = $state<string | null>(null);
+	let introDone = $state(false);
 	let initialized = $state(false);
 	let completedModules = $state<string[]>([]);
 
@@ -22,6 +24,9 @@ function createVisitor() {
 		},
 		get hasEmail() {
 			return email !== null;
+		},
+		get introDone() {
+			return introDone;
 		},
 		get initialized() {
 			return initialized;
@@ -46,6 +51,7 @@ function createVisitor() {
 				if (storedEmail) {
 					email = storedEmail;
 				}
+				introDone = localStorage.getItem(INTRO_KEY) === '1';
 				const storedCompleted = localStorage.getItem(COMPLETED_KEY);
 				if (storedCompleted) {
 					try {
@@ -66,6 +72,11 @@ function createVisitor() {
 		skipEmail() {
 			email = '';
 			localStorage.setItem(EMAIL_KEY, '');
+		},
+
+		markIntroDone() {
+			introDone = true;
+			localStorage.setItem(INTRO_KEY, '1');
 		},
 
 		setAge(group: AgeGroup) {

@@ -57,16 +57,22 @@ Singleton runes (pas de classe). Persisté en `localStorage`.
 
 ```ts
 visitor.init()              // à appeler dans onMount
+visitor.hasEmail            // boolean
+visitor.email               // string | null
+visitor.setEmail(value)     // persiste en localStorage
+visitor.skipEmail()         // marque comme passé
 visitor.hasAge              // boolean
 visitor.ageGroup            // AgeGroup | null
 visitor.setAge(group)       // persiste en localStorage
+visitor.introDone           // boolean
+visitor.markIntroDone()     // persiste en localStorage
 visitor.completedModules    // string[] (IDs)
 visitor.markComplete(id)    // persiste en localStorage
 visitor.clearProgress()
 ```
 
 - `AgeGroup = '3-4' | '5-7' | '8-10' | '11-13' | '14+'`
-- localStorage keys : `mirokai_age_group`, `mirokai_completed`
+- localStorage keys : `mirokai_email`, `mirokai_age_group`, `mirokai_intro_done`, `mirokai_completed`
 
 ### `auth` (`src/lib/auth.svelte.ts`)
 Singleton runes pour l'admin. JWT Bearer token.
@@ -180,19 +186,20 @@ Plein écran, même fond dégradé bleu/violet que Vue 1. Logo Enchanted Tools e
 
 ---
 
-### Vue 3 — Introduction / Prologue · **Partiellement implémenté** (`/`)
+### Vue 3 — Introduction / Prologue · **Implémenté** (`/`, phase `'intro'`)
 
-Le personnage Miroki se présente avec un **texte qui défile** synchronisé à un **audio de narration**.
+Le personnage Miroki se présente. S'affiche une seule fois (premier lancement), puis le Hub prend le relais.
 
-- Fond : dégradé `primary → #a03379` + image `/images/background-landscape.png`
-- Header avec nom de l'étape ("Prologue") + bouton carte (ouvre Vue 5b)
-- Personnage Miroki centré (`/images/miroki-character.png`, 353×182px)
-- Bulle de dialogue sous le personnage avec le texte narratif
-- Audio de narration joué automatiquement (texte scrolle en sync via `transcript_segments`)
-- Fin de l'audio → transition vers Vue 4 (Hub)
+- Fond : image atmosphérique plein écran (`/images/intro-background.jpg`) + gradient overlay
+- Logo Enchanted Tools en haut (pas de header bar)
+- Personnage Miroki centré, plus grand que le hub (`/images/miroki-character.png`, 467×228px)
+- Bulle de dialogue sous le personnage avec le texte introductif
+- Bouton "Continuer" pour passer au Hub
+- Progression persistée dans `localStorage` (`mirokai_intro_done`)
+- Fin de l'intro → marque `introDone`, transition vers Vue 4 (Hub)
 
-> **État** : structure en place. Audio + défilement texte synchronisé à câbler depuis `data.settings` ou un module "prologue" dédié.
-> **Route** : `src/routes/+page.svelte`
+> **État** : visuel en place. Audio + défilement texte synchronisé à câbler depuis `data.settings` ou un module "prologue" dédié. Quand l'audio sera branché, le bouton "Continuer" sera remplacé par la fin de l'audio.
+> **Route** : `src/routes/+page.svelte` (phase `'intro'`)
 
 ---
 
