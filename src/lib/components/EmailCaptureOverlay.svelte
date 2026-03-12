@@ -32,7 +32,7 @@
 >
 <div class="flex h-full w-full max-w-[480px] flex-col items-center justify-between px-6 py-6">
 	<!-- Logo -->
-	<div class="mt-8 flex flex-col items-center">
+	<div class="mt-2 flex flex-col items-center sm:mt-8">
 		<div class="flex h-[69px] w-[168px] flex-col items-center justify-between">
 			<img
 				src="/images/logo-icon.svg"
@@ -50,8 +50,8 @@
 	</div>
 
 	<!-- Title & description -->
-	<div class="flex w-full flex-1 flex-col justify-center gap-6">
-		<h1 class="font-title text-[64px] leading-[60px] font-semibold uppercase text-white">
+	<div class="flex w-full flex-1 flex-col justify-center gap-3 sm:gap-6">
+		<h1 class="font-title text-[42px] leading-[40px] font-semibold uppercase text-white sm:text-[58px] sm:leading-[54px]">
 			Bienvenue dans l'aventure Mirokai
 		</h1>
 		<p class="font-body text-xl leading-[30px] text-white">
@@ -62,7 +62,7 @@
 	</div>
 
 	<!-- Form -->
-	<form onsubmit={handleSubmit} class="flex w-full flex-col gap-6 pb-6">
+	<form onsubmit={handleSubmit} class="flex w-full flex-col gap-4 pb-4 sm:gap-6 sm:pb-6">
 		<div class="flex flex-col gap-1">
 			<input
 				type="email"

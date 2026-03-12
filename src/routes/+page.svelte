@@ -99,11 +99,11 @@
 			</div>
 
 			<!-- Character (larger for intro) -->
-			<div class="flex flex-1 items-center justify-center">
+			<div class="flex min-h-0 flex-1 items-center justify-center">
 				<img
 					src="/images/miroki-character.jpg"
 					alt="Miroki"
-					class="pointer-events-none h-[467px] w-[228px] object-contain"
+					class="pointer-events-none h-full max-h-[467px] w-auto object-contain"
 					draggable="false"
 				/>
 			</div>

@@ -23,7 +23,7 @@
 >
 <div class="flex h-full w-full max-w-[480px] flex-col items-center justify-between px-6 py-6">
 	<!-- Logo -->
-	<div class="mt-8 flex flex-col items-center">
+	<div class="mt-2 flex flex-col items-center sm:mt-8">
 		<div class="flex h-[69px] w-[168px] flex-col items-center justify-between">
 			<img
 				src="/images/logo-icon.svg"
@@ -41,8 +41,8 @@
 	</div>
 
 	<!-- Title & description -->
-	<div class="flex w-full flex-1 flex-col justify-center gap-6">
-		<h1 class="font-title text-[64px] leading-[60px] font-semibold uppercase text-white">
+	<div class="flex w-full flex-1 flex-col justify-center gap-3 sm:gap-6">
+		<h1 class="font-title text-[42px] leading-[40px] font-semibold uppercase text-white sm:text-[64px] sm:leading-[60px]">
 			Pour qui commence l'aventure ?
 		</h1>
 		<p class="font-body text-xl leading-[30px] text-white">
@@ -51,11 +51,11 @@
 	</div>
 
 	<!-- Selection options + button -->
-	<div class="flex w-full max-w-[342px] flex-1 flex-col items-center gap-6">
+	<div class="flex w-full max-w-[342px] flex-1 flex-col items-center gap-3 sm:gap-6">
 		{#each options as opt}
 			<button
 				onclick={() => (selected = opt.group)}
-				class="font-body flex h-[53px] w-full items-center gap-4 rounded-full border px-8 py-4 text-lg text-white transition-colors"
+				class="font-body flex h-[42px] w-full items-center gap-4 rounded-full border px-8 text-lg text-white transition-colors sm:h-[53px] sm:py-4"
 				class:border-white={selected === opt.group}
 				class:border-[#dad1d6]={selected !== opt.group}
 			>
@@ -76,7 +76,7 @@
 		<button
 			onclick={handleContinue}
 			disabled={!selected}
-			class="font-body h-[53px] w-full rounded-full border border-[#dad1d6] bg-purple text-lg text-white transition-opacity disabled:opacity-40"
+			class="font-body h-[42px] w-full rounded-full border border-[#dad1d6] bg-purple text-lg text-white transition-opacity disabled:opacity-40 sm:h-[53px]"
 		>
 			Continuer
 		</button>
