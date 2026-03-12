@@ -27,3 +27,5 @@ docs-ignore/*
 
 .claude
 .vscode
+
+CLAUDE.md
