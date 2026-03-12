@@ -122,7 +122,7 @@
 {/if}
 
 <!-- Bouton lecture -->
-<div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-25">
+<div class="fixed bottom-8 left-5 z-25">
 	<button
 		onclick={toggle}
 		class="flex size-[52px] items-center justify-center rounded-lg border border-[#dad1d6] bg-purple shadow-lg transition-transform hover:scale-110 active:scale-95"

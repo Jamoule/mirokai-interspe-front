@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { visitor } from '$lib/visitor.svelte';
+	import { ChevronRight } from 'lucide-svelte';
 	import AudioPlayer from '$lib/components/AudioPlayer.svelte';
 	import AgeSelectionOverlay from '$lib/components/AgeSelectionOverlay.svelte';
 	import QuizOverlay from '$lib/components/QuizOverlay.svelte';
@@ -12,6 +13,12 @@
 	let { data } = $props();
 	let module = $derived(data.module);
 	let totalModules = $derived(data.totalModules ?? 0);
+	let modules = $derived(data.modules ?? []);
+	let nextModuleQr = $derived.by(() => {
+		if (!module.next_module_id) return null;
+		const next = modules.find((m) => m.id === module.next_module_id);
+		return next?.qr_code ?? null;
+	});
 
 	type VisitorPhase = 'audio' | 'quiz-intro' | 'quiz' | 'complete';
 	let visitorPhase = $state<VisitorPhase>('audio');
@@ -156,7 +163,7 @@
 					onclick={() => goto('/')}
 					class="font-body w-full max-w-[342px] rounded-full border border-[#dad1d6] bg-purple px-8 py-4 text-lg text-white transition-opacity hover:opacity-90 active:scale-[0.98]"
 				>
-					Allez au bloc suivant
+					Retour au plan
 				</button>
 				<button
 					onclick={replay}
@@ -178,6 +185,16 @@
 		segments={module.transcript_segments ?? []}
 		onPlayingChange={(v) => (isAudioPlaying = v)}
 	/>
+{/if}
+
+{#if nextModuleQr && audioReady && module.media_url && visitorPhase === 'audio'}
+	<button
+		onclick={() => goto(`/module/${nextModuleQr}`)}
+		class="fixed bottom-8 right-5 z-25 flex items-center gap-1.5 rounded-lg border border-[#b7b7b7] bg-cta px-4 py-3 font-body text-base font-bold text-purple shadow-lg transition-transform hover:scale-105 active:scale-95"
+	>
+		Mission suivante
+		<ChevronRight size={20} />
+	</button>
 {/if}
 
 {#if overlayVisible}

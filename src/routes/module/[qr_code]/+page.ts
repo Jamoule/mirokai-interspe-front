@@ -10,8 +10,8 @@ export const load: PageLoad = async ({ params }) => {
 			visitorApi.getModuleByQr(params.qr_code),
 			visitorApi.getModules().catch(() => [])
 		]);
-		const totalModules = modules.filter((m) => m.is_active).length;
-		return { module, totalModules };
+		const activeModules = modules.filter((m) => m.is_active);
+		return { module, totalModules: activeModules.length, modules: activeModules };
 	} catch (e) {
 		throw error(404, 'Module introuvable');
 	}

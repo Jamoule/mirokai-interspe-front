@@ -109,6 +109,7 @@ export interface Module {
 	has_quiz: boolean;
 	is_active: boolean;
 	suggested_order: number;
+	next_module_id: string | null;
 	created_at: string;
 	updated_at: string;
 }

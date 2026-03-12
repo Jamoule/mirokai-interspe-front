@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { visitor } from '$lib/visitor.svelte';
 	import EmailCaptureOverlay from '$lib/components/EmailCaptureOverlay.svelte';
 	import AgeSelectionOverlay from '$lib/components/AgeSelectionOverlay.svelte';
@@ -11,33 +11,71 @@
 
 	type PagePhase = 'intro' | 'hub';
 	let phase = $state<PagePhase>('intro');
+	const INTRO_DURATION_MS = 5000;
+	const INTRO_BACKGROUND_URL = 'https://www.figma.com/api/mcp/asset/2c62beb6-cec2-47a7-a337-2ca4e499fa29';
+	const INTRO_CHARACTER_URL = 'https://www.figma.com/api/mcp/asset/4fe1d640-e86d-4720-bf88-73b6dc997935';
+	let introTimer: ReturnType<typeof setTimeout> | null = null;
 
 	let showEmail = $state(false);
 	let showAge = $state(false);
 	let showPlan = $state(false);
+	let forceAgeAfterEmail = $state(false);
+
+	function clearIntroTimer() {
+		if (introTimer) {
+			clearTimeout(introTimer);
+			introTimer = null;
+		}
+	}
+
+	function startIntroIfReady() {
+		if (phase !== 'intro' || showEmail || showAge || visitor.introDone || introTimer) {
+			return;
+		}
+
+		introTimer = setTimeout(() => {
+			visitor.markIntroDone();
+			phase = 'hub';
+			introTimer = null;
+		}, INTRO_DURATION_MS);
+	}
 
 	onMount(() => {
 		visitor.init();
 
 		if (!visitor.hasEmail) {
 			showEmail = true;
+			forceAgeAfterEmail = true;
 		} else if (!visitor.hasAge) {
 			showAge = true;
 		} else if (visitor.introDone) {
 			phase = 'hub';
 		}
+
+		startIntroIfReady();
+	});
+
+	onDestroy(() => {
+		clearIntroTimer();
 	});
 
 	function advanceAfterOnboarding() {
 		if (visitor.introDone) {
 			phase = 'hub';
+			clearIntroTimer();
+			return;
 		}
+
+		phase = 'intro';
+		startIntroIfReady();
 	}
 
 	function handleEmailSubmit(email: string) {
+		clearIntroTimer();
 		visitor.setEmail(email);
 		showEmail = false;
-		if (!visitor.hasAge) {
+		if (forceAgeAfterEmail || !visitor.hasAge) {
+			forceAgeAfterEmail = false;
 			showAge = true;
 		} else {
 			advanceAfterOnboarding();
@@ -45,9 +83,11 @@
 	}
 
 	function handleEmailSkip() {
+		clearIntroTimer();
 		visitor.skipEmail();
 		showEmail = false;
-		if (!visitor.hasAge) {
+		if (forceAgeAfterEmail || !visitor.hasAge) {
+			forceAgeAfterEmail = false;
 			showAge = true;
 		} else {
 			advanceAfterOnboarding();
@@ -59,29 +99,20 @@
 		showAge = false;
 		advanceAfterOnboarding();
 	}
-
-	function handleIntroEnd() {
-		visitor.markIntroDone();
-		phase = 'hub';
-	}
 </script>
 
 {#if phase === 'intro'}
-	<!-- Vue 3 — Introduction / Prologue -->
-	<div class="relative flex h-dvh w-full items-center justify-center overflow-hidden">
-		<!-- Background image (zoomed & cropped to fill) -->
+	<div class="relative flex h-dvh w-full justify-center overflow-hidden bg-surface">
 		<img
-			src="/images/intro-background.jpg"
+			src={INTRO_BACKGROUND_URL}
 			alt=""
 			class="pointer-events-none absolute inset-0 h-full w-full object-cover"
 			draggable="false"
 		/>
-		<div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/5 to-black/30"></div>
+		<div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 to-black/10"></div>
 
-		<!-- Inner wrapper -->
-		<div class="relative z-10 flex h-full w-full max-w-[480px] flex-col items-center">
-			<!-- Logo -->
-			<div class="mt-16 flex flex-col items-center">
+		<div class="relative z-10 flex h-full w-full max-w-[390px] flex-col items-center">
+			<div class="mt-[98px] flex flex-col items-center">
 				<div class="flex h-[69px] w-[168px] flex-col items-center justify-between">
 					<img
 						src="/images/logo-icon.svg"
@@ -98,29 +129,20 @@
 				</div>
 			</div>
 
-			<!-- Character (larger for intro) -->
-			<div class="flex min-h-0 flex-1 items-center justify-center">
+			<div class="flex min-h-0 flex-1 items-end justify-center">
 				<img
-					src="/images/miroki-character.jpg"
+					src={INTRO_CHARACTER_URL}
 					alt="Miroki"
-					class="pointer-events-none h-full max-h-[467px] w-auto object-contain"
+					class="pointer-events-none h-[467px] w-[228px] object-contain"
 					draggable="false"
 				/>
 			</div>
 
-			<!-- Speech bubble -->
-			<div class="mx-5 mb-6 rounded-[21px] p-4" style="background: rgba(17, 35, 97, 0.8);">
+			<div class="mx-[19px] mb-[22px] rounded-[21px] bg-[#112361cc] p-4">
 				<p class="font-body w-[320px] text-xl leading-[30px] text-white">
 					Bien le bonjour à toi voyageur, je m'appelle Miroki.
 				</p>
 			</div>
-
-			<button
-				onclick={handleIntroEnd}
-				class="font-body mb-10 rounded-full border border-[#dad1d6] bg-purple px-10 py-3 text-lg text-white transition-opacity hover:opacity-90 active:scale-[0.98]"
-			>
-				Continuer
-			</button>
 		</div>
 	</div>
 {:else}
