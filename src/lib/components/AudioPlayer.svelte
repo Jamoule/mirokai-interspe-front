@@ -82,51 +82,39 @@
 {#if playing && scrollMode && segments.length > 0}
 	<!-- Mode scroll : timestamps absents, navigation manuelle entre répliques -->
 	{@const seg = segments[scrollIdx]}
-	<div class="fixed bottom-28 left-0 right-0 z-25 flex flex-col items-center gap-2 px-4 pointer-events-none">
+	<div class="fixed bottom-28 left-0 right-0 z-25 flex flex-col items-center gap-3 px-5 pointer-events-none">
 		<!-- Navigation -->
 		<div class="flex items-center gap-3 pointer-events-auto">
 			<button
 				onclick={prevSegment}
 				disabled={scrollIdx === 0}
-				class="w-8 h-8 rounded-full flex items-center justify-center text-white/60 disabled:opacity-20 transition-opacity"
-				style="background: rgba(15,11,36,0.6);"
+				class="flex size-8 items-center justify-center rounded-full text-white/60 disabled:opacity-20 transition-opacity"
+				style="background: rgba(17, 35, 97, 0.6);"
 				aria-label="Réplique précédente"
 			>
 				‹
 			</button>
-			<span class="text-white/40 text-xs">{scrollIdx + 1} / {segments.length}</span>
+			<span class="font-body text-sm text-white/40">{scrollIdx + 1} / {segments.length}</span>
 			<button
 				onclick={nextSegment}
 				disabled={scrollIdx === segments.length - 1}
-				class="w-8 h-8 rounded-full flex items-center justify-center text-white/60 disabled:opacity-20 transition-opacity"
-				style="background: rgba(15,11,36,0.6);"
+				class="flex size-8 items-center justify-center rounded-full text-white/60 disabled:opacity-20 transition-opacity"
+				style="background: rgba(17, 35, 97, 0.6);"
 				aria-label="Réplique suivante"
 			>
 				›
 			</button>
 		</div>
 		<!-- Réplique -->
-		<div
-			class="w-[min(90vw,34rem)] rounded-2xl px-5 py-3 text-center"
-			style="background: rgba(15,11,36,0.82); backdrop-filter: blur(6px);"
-		>
-			<div class="text-xs font-semibold mb-1" style="color: {speakerColor(seg.speaker)};">
-				{seg.speaker}
-			</div>
-			<p class="text-white text-sm leading-relaxed">{seg.text}</p>
+		<div class="w-[320px] rounded-[21px] p-4" style="background: rgba(17, 35, 97, 0.8);">
+			<p class="font-body text-xl leading-[30px] text-white">{seg.text}</p>
 		</div>
 	</div>
 {:else if playing && currentSegment}
 	<!-- Mode sync : affichage calé sur les timestamps -->
-	<div class="fixed bottom-28 left-1/2 -translate-x-1/2 z-25 w-[min(90vw,34rem)] text-center pointer-events-none">
-		<div
-			class="rounded-2xl px-5 py-3"
-			style="background: rgba(15,11,36,0.82); backdrop-filter: blur(6px);"
-		>
-			<div class="text-xs font-semibold mb-1" style="color: {speakerColor(currentSegment.speaker)};">
-				{currentSegment.speaker}
-			</div>
-			<p class="text-white text-sm leading-relaxed">{currentSegment.text}</p>
+	<div class="fixed bottom-28 left-1/2 -translate-x-1/2 z-25 pointer-events-none px-5">
+		<div class="w-[320px] rounded-[21px] p-4" style="background: rgba(17, 35, 97, 0.8);">
+			<p class="font-body text-xl leading-[30px] text-white">{currentSegment.text}</p>
 		</div>
 	</div>
 {/if}
@@ -135,13 +123,13 @@
 <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-25">
 	<button
 		onclick={toggle}
-		class="flex items-center justify-center w-16 h-16 rounded-full bg-[#FFBD14] text-[#0F0B24] shadow-lg transition-transform hover:scale-110 active:scale-95"
+		class="flex size-[52px] items-center justify-center rounded-lg border border-[#dad1d6] bg-purple shadow-lg transition-transform hover:scale-110 active:scale-95"
 		aria-label={playing ? 'Pause' : 'Lecture'}
 	>
 		{#if playing}
-			<Pause size={28} />
+			<Pause size={24} color="white" />
 		{:else}
-			<Play size={28} />
+			<Play size={24} color="white" />
 		{/if}
 	</button>
 </div>

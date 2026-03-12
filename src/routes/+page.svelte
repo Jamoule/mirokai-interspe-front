@@ -99,7 +99,7 @@
 		<!-- Character (larger for intro) -->
 		<div class="relative z-10 flex flex-1 items-center justify-center">
 			<img
-				src="/images/miroki-character.png"
+				src="/images/miroki-character.jpg"
 				alt="Miroki"
 				class="pointer-events-none h-[467px] w-[228px] object-contain"
 				draggable="false"
@@ -123,12 +123,12 @@
 {:else}
 	<!-- Vue 4 — Hub principal -->
 	<div
-		class="relative flex h-dvh w-full flex-col items-center overflow-hidden"
-		style="background: linear-gradient(245.55deg, var(--color-primary) 12.65%, #a03379 104.49%)"
+		class="relative flex h-dvh w-full flex-col items-center overflow-hidden px-6"
+		style="background: linear-gradient(180deg, rgba(102,102,102,0.06) 0%, rgba(0,0,0,0.06) 100%), linear-gradient(245.55deg, var(--color-primary) 12.65%, #a03379 104.49%)"
 	>
 		<!-- Background landscape -->
 		<img
-			src="/images/background-landscape.png"
+			src="/images/background-landscape.jpg"
 			alt=""
 			class="pointer-events-none absolute inset-0 h-full w-full object-cover"
 			draggable="false"
@@ -136,15 +136,15 @@
 
 		<!-- Header bar -->
 		<header
-			class="relative z-10 mx-6 mt-14 flex w-[calc(100%-3rem)] max-w-[342px] items-center justify-between rounded-full px-4 py-2"
+			class="relative z-10 mt-14 flex w-full max-w-[342px] items-center justify-between rounded-full px-4 py-2"
 			style="background: rgba(180, 180, 180, 0.43); box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);"
 		>
-			<span class="font-body text-xl leading-[30px] font-bold text-purple">
+			<span class="font-body flex-1 text-xl leading-[30px] font-bold text-purple">
 				Prologue
 			</span>
 			<button
 				onclick={() => (showPlan = true)}
-				class="flex size-[52px] items-center justify-center rounded-lg border border-[#dad1d6] bg-purple"
+				class="flex size-[52px] shrink-0 items-center justify-center rounded-lg border border-[#dad1d6] bg-purple"
 				aria-label="Ouvrir le plan"
 			>
 				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -157,7 +157,7 @@
 		<!-- Central content: character + speech bubble -->
 		<div class="relative z-10 flex flex-1 flex-col items-center justify-center gap-6">
 			<img
-				src="/images/miroki-character.png"
+				src="/images/miroki-character.jpg"
 				alt="Miroki"
 				class="pointer-events-none h-[353px] w-[182px] object-contain"
 				draggable="false"
