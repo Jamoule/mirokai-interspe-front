@@ -74,6 +74,8 @@
 <video
 	bind:this={media}
 	{src}
+	playsinline
+	webkit-playsinline
 	onended={() => { playing = false; onPlayingChange?.(false); onEnded?.(); }}
 	ontimeupdate={() => { currentTime = media?.currentTime ?? 0; }}
 	style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"

@@ -13,7 +13,7 @@
 	let module = $derived(data.module);
 	let totalModules = $derived(data.totalModules ?? 0);
 
-	type VisitorPhase = 'audio' | 'quiz' | 'complete';
+	type VisitorPhase = 'audio' | 'quiz-intro' | 'quiz' | 'complete';
 	let visitorPhase = $state<VisitorPhase>('audio');
 	let overlayVisible = $state(false);
 	let audioReady = $state(false);
@@ -36,10 +36,21 @@
 	}
 
 	function handleAudioEnded() {
-		visitorPhase = module.has_quiz ? 'quiz' : 'complete';
-		if (visitorPhase === 'complete') {
+		if (module.has_quiz) {
+			visitorPhase = 'quiz-intro';
+		} else {
+			visitorPhase = 'complete';
 			visitor.markComplete(module.id);
 		}
+	}
+
+	function handleQuizIntroAccept() {
+		visitorPhase = 'quiz';
+	}
+
+	function handleQuizIntroSkip() {
+		visitorPhase = 'complete';
+		visitor.markComplete(module.id);
 	}
 
 	function handleQuizComplete() {
@@ -63,6 +74,10 @@
 		class="pointer-events-none absolute inset-0 h-full w-full object-cover"
 		draggable="false"
 	/>
+	<div
+		class="pointer-events-none absolute inset-0 transition-opacity duration-500"
+		style="background: rgba(0,0,0,0.5); opacity: {visitorPhase === 'quiz-intro' ? 1 : 0};"
+	></div>
 
 	<!-- Header bar -->
 	<header
@@ -93,34 +108,63 @@
 	</header>
 
 	<!-- Central content -->
-	<div class="relative z-10 flex flex-1 flex-col items-center w-full {visitorPhase === 'quiz' ? '' : 'justify-center gap-6'}">
-		<!-- Character -->
-		<img
-			src="/images/miroki-character.jpg"
-			alt="Miroki"
-			class="pointer-events-none object-contain transition-all duration-300 {visitorPhase === 'quiz' ? 'mt-4 h-[140px] w-auto' : 'h-[353px] w-[182px]'}"
-			draggable="false"
-		/>
+	<div class="relative z-10 flex min-h-0 flex-1 flex-col items-center w-full {visitorPhase === 'quiz' ? '' : 'justify-center gap-4 sm:gap-6'}">
 
-		<!-- Quiz (inline, phase quiz) -->
-		{#if visitorPhase === 'quiz' && visitor.ageGroup}
-			<QuizOverlay moduleId={module.id} ageGroup={visitor.ageGroup} onComplete={handleQuizComplete} />
-		{/if}
+		{#if visitorPhase === 'quiz-intro'}
+			<!-- Quiz intro -->
+			<p class="font-body w-full max-w-[342px] shrink-0 text-lg leading-[26px] font-bold text-white sm:text-xl sm:leading-[30px]">
+				Mirokai a une surprise pour toi…<br />
+				Mais d'abord, sauras-tu répondre à sa question ?
+			</p>
 
-		<!-- Action buttons: visible in complete phase -->
-		{#if visitorPhase === 'complete'}
+			<img
+				src="/images/miroki-character.jpg"
+				alt="Miroki"
+				class="pointer-events-none min-h-0 max-h-[353px] w-auto flex-1 object-contain"
+				draggable="false"
+			/>
+
 			<button
-				onclick={() => goto('/')}
-				class="font-body w-full max-w-[342px] rounded-full border border-[#dad1d6] bg-purple px-8 py-4 text-lg text-white transition-opacity hover:opacity-90 active:scale-[0.98]"
+				onclick={handleQuizIntroAccept}
+				class="font-body shrink-0 rounded-full border border-[#b7b7b7] bg-cta px-8 py-3 text-lg font-bold text-purple transition-opacity hover:opacity-90 active:scale-[0.98] sm:py-4"
 			>
-				Allez au bloc suivant
+				Je relève le défi
 			</button>
 			<button
-				onclick={replay}
-				class="font-body text-base text-white/60 underline underline-offset-2 transition-colors hover:text-white/80"
+				onclick={handleQuizIntroSkip}
+				class="font-body shrink-0 pb-2 text-lg text-white underline underline-offset-2 transition-colors hover:text-white/80"
 			>
-				Rejouer
+				Passer cette étape
 			</button>
+		{:else}
+			<!-- Character -->
+			<img
+				src="/images/miroki-character.jpg"
+				alt="Miroki"
+				class="pointer-events-none object-contain transition-all duration-300 {visitorPhase === 'quiz' ? 'mt-4 h-[140px] w-auto' : 'h-[353px] w-[182px]'}"
+				draggable="false"
+			/>
+
+			<!-- Quiz -->
+			{#if visitorPhase === 'quiz' && visitor.ageGroup}
+				<QuizOverlay moduleId={module.id} ageGroup={visitor.ageGroup} onComplete={handleQuizComplete} />
+			{/if}
+
+			<!-- Complete -->
+			{#if visitorPhase === 'complete'}
+				<button
+					onclick={() => goto('/')}
+					class="font-body w-full max-w-[342px] rounded-full border border-[#dad1d6] bg-purple px-8 py-4 text-lg text-white transition-opacity hover:opacity-90 active:scale-[0.98]"
+				>
+					Allez au bloc suivant
+				</button>
+				<button
+					onclick={replay}
+					class="font-body text-base text-white/60 underline underline-offset-2 transition-colors hover:text-white/80"
+				>
+					Rejouer
+				</button>
+			{/if}
 		{/if}
 	</div>
 </div>
