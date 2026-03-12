@@ -47,10 +47,10 @@ function createVisitor() {
 				) {
 					ageGroup = stored;
 				}
-				const storedEmail = localStorage.getItem(EMAIL_KEY);
-				if (storedEmail) {
-					email = storedEmail;
-				}
+			const storedEmail = localStorage.getItem(EMAIL_KEY);
+			if (storedEmail !== null) {
+				email = storedEmail;
+			}
 				introDone = localStorage.getItem(INTRO_KEY) === '1';
 				const storedCompleted = localStorage.getItem(COMPLETED_KEY);
 				if (storedCompleted) {
