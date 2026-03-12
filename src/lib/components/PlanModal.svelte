@@ -112,7 +112,7 @@
 						"
 						title={mod.name}
 					>
-						{#if done && !isCurrent}✓{:else}{mod.number}{/if}
+						{mod.number}
 					</button>
 					<div
 						class="absolute left-1/2 -translate-x-1/2 mt-1 rounded px-2 py-0.5 text-xs font-medium text-center whitespace-nowrap pointer-events-none {isCurrent ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity"
