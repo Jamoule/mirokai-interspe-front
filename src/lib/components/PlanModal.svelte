@@ -89,35 +89,31 @@
 			<!-- Module markers -->
 			{#each modules.filter((m) => m.is_active) as mod (mod.id)}
 				{@const done = completedIds.includes(mod.id)}
-				<button
-					onclick={() => navigate(mod.qr_code)}
-					class="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center"
-					style="left: {px(mod.position_x, 1000)}; top: {px(mod.position_y, 700)}; z-index: 2;"
-					title={mod.name}
+				<div
+					class="absolute -translate-x-1/2 -translate-y-1/2 group"
+					style="left: {px(mod.position_x, 1000)}; top: {px(mod.position_y, 700)}; z-index: 2; width: 40px; height: 40px;"
 				>
-					<!-- Badge -->
-					<div
-						class="flex items-center justify-center rounded-full font-bold shadow-lg transition-transform group-hover:scale-125 group-active:scale-95"
+					<button
+						onclick={() => navigate(mod.qr_code)}
+						class="w-full h-full flex items-center justify-center rounded-full font-bold shadow-lg transition-transform group-hover:scale-125 group-active:scale-95 cursor-pointer"
 						style="
-							width: 40px;
-							height: 40px;
 							background: {done ? '#22c55e' : '#FFBD14'};
 							color: {done ? 'white' : '#0F0B24'};
 							border: 2.5px solid rgba(255,255,255,0.6);
 							box-shadow: 0 4px 14px rgba(0,0,0,0.5);
 							font-size: 14px;
 						"
+						title={mod.name}
 					>
 						{#if done}✓{:else}{mod.number}{/if}
-					</div>
-					<!-- Tooltip nom -->
+					</button>
 					<div
-						class="mt-1 rounded px-2 py-0.5 text-xs font-medium text-center whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+						class="absolute left-1/2 -translate-x-1/2 mt-1 rounded px-2 py-0.5 text-xs font-medium text-center whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
 						style="background: rgba(15,11,36,0.9); color: white; max-width: 120px; overflow: hidden; text-overflow: ellipsis;"
 					>
 						{mod.name}
 					</div>
-				</button>
+				</div>
 			{/each}
 		</div>
 	{/if}
