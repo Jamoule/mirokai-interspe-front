@@ -141,5 +141,5 @@
 {/if}
 
 {#if showPlan}
-	<PlanModal completedIds={visitor.completedModules} onClose={() => (showPlan = false)} />
+	<PlanModal completedIds={visitor.completedModules} currentModuleId={module.id} onClose={() => (showPlan = false)} />
 {/if}
