@@ -36,6 +36,12 @@
 		}
 	});
 
+	$effect(() => {
+		module.id;
+		visitorPhase = 'audio';
+		audioReady = visitor.hasAge;
+	});
+
 	function handleAgeSelect(group: AgeGroup) {
 		visitor.setAge(group);
 		overlayVisible = false;
