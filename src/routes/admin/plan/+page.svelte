@@ -7,7 +7,7 @@
 
 	const CONTAINER_W = 1000;
 	const CONTAINER_H = 700;
-	const BASE = 'http://localhost:5000';
+	const BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:5000').replace(/\/api$/, '');
 
 	function resolveUrl(url: string | null | undefined): string {
 		if (!url) return '';
